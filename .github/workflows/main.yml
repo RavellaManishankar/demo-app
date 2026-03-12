@@ -1,0 +1,28 @@
+name: Publish to Exchange & Deploy to CH2.0
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Build, Publish to Exchange, and Deploy
+        run: |
+          mvn clean deploy \
+          --settings .maven/settings.xml \
+          -DskipMunitTests \
+          -DmuleDeploy \
+          -Dclient.id=${{ secrets.CONNECTED_APP_CLIENT_ID }} \
+          -Dclient.secret=${{ secrets.CONNECTED_APP_CLIENT_SECRET }}
